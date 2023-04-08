@@ -1,0 +1,6 @@
+*.So
+*.o
+*.bin
+*.img
+*.tmp
+*.raw
