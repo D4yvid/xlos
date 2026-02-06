@@ -155,3 +155,88 @@ xLOS/
 ## License
 
 This is a hobby project for educational purposes.
+
+## Kernel
+
+xLOS includes dual-architecture kernel support:
+
+### 32-bit Kernel (kernel/32bit/)
+- Runs in 32-bit protected mode
+- Entry point at 0x100000 (1MB)
+- Features:
+  - VGA text mode driver
+  - Basic kernel initialization
+  - 4GB address space support
+- Built with i686-elf-* toolchain
+
+### 64-bit Kernel (kernel/64bit/)
+- Runs in 64-bit long mode
+- Entry point at 0x100000 (1MB)
+- Features:
+  - VGA text mode driver
+  - Basic kernel initialization
+  - Full 64-bit address space
+  - Red-zone disabled for kernel compatibility
+- Built with x86_64-elf-* toolchain
+
+### Building the Kernel
+
+Build both kernel architectures:
+```bash
+make kernel
+```
+
+Build specific architecture:
+```bash
+cd kernel
+make 32bit  # Build 32-bit kernel only
+make 64bit  # Build 64-bit kernel only
+```
+
+### Kernel Output Files
+
+**32-bit kernel:**
+- `kernel/32bit/kernel32.elf` - ELF executable
+
+**64-bit kernel:**
+- `kernel/64bit/kernel64.elf` - ELF executable
+
+### Kernel Features
+
+- **VGA Text Mode**: 80x25 character display
+- **Color Support**: 16 foreground/background colors
+- **Scrolling**: Automatic screen scrolling
+- **Architecture Detection**: Displays current mode (32-bit/64-bit)
+- **Modular Design**: Clean separation between drivers and kernel code
+
+### Memory Map
+
+```
+0x00000000 - 0x000003FF: Real Mode IVT (Interrupt Vector Table)
+0x00000400 - 0x000004FF: BIOS Data Area
+0x00000500 - 0x00007BFF: Free memory (30KB)
+0x00007C00 - 0x00007DFF: Bootloader Stage 0
+0x00007E00 - 0x0007FFFF: Bootloader Stage 1
+0x00080000 - 0x0009FFFF: Extended BIOS Data Area
+0x000A0000 - 0x000BFFFF: Video Memory
+0x000C0000 - 0x000FFFFF: BIOS ROM
+0x00100000 - ...       : Kernel (loaded at 1MB)
+0x00200000 - ...       : Kernel stack
+```
+
+### Kernel Architecture
+
+Both kernels follow the same structure:
+
+```
+kernel/{32bit,64bit}/
+├── src/
+│   ├── entry.S          # Assembly entry point
+│   ├── kernel.c         # Main kernel code
+│   ├── vga.c            # VGA driver
+│   └── include/
+│       ├── types.h      # Type definitions
+│       └── vga.h        # VGA driver header
+├── linker.ld            # Linker script
+└── Makefile             # Build configuration
+```

@@ -174,5 +174,9 @@ __NORETURN__ void Entry(u32 drive)
 	PrintAt(" bytes", cursor_y, 30);
 	cursor_y++;
 
-	for (;;);
+	INFO("Jumping to kernel at 0x100000...");
+
+	// Jump to kernel
+	void (*kernel_entry)(void) = (void (*)(void))0x100000;
+	kernel_entry();
 }
