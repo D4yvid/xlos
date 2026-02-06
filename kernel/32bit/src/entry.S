@@ -18,3 +18,6 @@ halt:
     cli
     hlt
     jmp halt
+
+# Mark stack as non-executable (fixes GNU-stack warning)
+.section .note.GNU-stack,"",@progbits

@@ -4,3 +4,13 @@
 *.img
 *.tmp
 *.raw
+# Build artifacts
+*.o
+*.So
+*.elf
+*.bin
+*.img
+
+# Test files
+xlos-32bit.img
+xlos-64bit.img
