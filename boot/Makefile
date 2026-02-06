@@ -1,42 +1,17 @@
-include ../config.mk
+.PHONY: all clean 32bit 64bit
 
-CSRC = $(wildcard src/*.c)
-ASRC = $(wildcard src/*.S)
-OBJ  = $(ASRC:.S=.So) $(CSRC:.c=.o)
+all: 32bit 64bit
 
-BOOTCODE = bootloader.raw
+32bit:
+	@echo "Building 32-bit bootloader..."
+	@$(MAKE) -C 32bit all
 
-CCFLAGS = -Wall -Werror -Wno-pedantic -I include -ffreestanding -fno-stack-protector -nostdlib -fno-builtin \
-	  -fno-builtin-types
-LDFLAGS = -Tlink.ld -nostdlib
-
-TARGET = bootsect.img
-
-%.So: %.S
-	$(AS) -o $@ $<
-
-%.o: %.c
-	$(CC) -c -o $@ $< $(CCFLAGS)
-
-bootloader: $(OBJ)
-	$(LD) $(LDFLAGS) -o $(BOOTCODE) $(OBJ)
-
-stage0:
-	@$(AS) -o stage0.tmp stage0.S
-	@$(LD) -Ttext=0x7C00 --oformat=binary -o stage0.bin stage0.tmp
-	@rm stage0.tmp
-
-build:
-	dd if=/dev/zero of=$(TARGET) bs=1024 count=4096
-
-	dd if=stage0.bin of=$(TARGET) conv=notrunc bs=512 count=1
-	dd if=$(BOOTCODE) of=$(TARGET) conv=notrunc bs=1 seek=512
-
-	echo -e "n\np\n1\n1\n\nt\n06\nw\nq" | fdisk bootsect.img
+64bit:
+	@echo "Building 64-bit bootloader..."
+	@$(MAKE) -C 64bit all
 
 clean:
-	rm -rf $(BOOTCODE) stage0.bin $(TARGET) $(OBJ)
-
-all: stage0 bootloader build
-
-.PHONY: all build clean stage0 bootloader
+	@echo "Cleaning 32-bit bootloader..."
+	@$(MAKE) -C 32bit clean
+	@echo "Cleaning 64-bit bootloader..."
+	@$(MAKE) -C 64bit clean
